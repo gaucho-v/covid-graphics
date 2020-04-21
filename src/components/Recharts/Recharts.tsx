@@ -14,7 +14,7 @@ const SimpleLineChart = ({placeData} : any)  => {
               >
       <XAxis dataKey='date'/>
       <YAxis/>
-      <CartesianGrid strokeDasharray="1 1"/>
+      <CartesianGrid strokeDasharray="0.5 1"/>
       <Tooltip/>
 
       <Line type="monotone" dataKey="confirmed" stroke="red" r={1}/>
