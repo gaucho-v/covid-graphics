@@ -6,7 +6,7 @@ import { createGlobalStyle } from 'styled-components'
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
  body { background-color: #eee;
-    font-family: "Roboto", sans-serif;
+        font-family: "Roboto", sans-serif;
   } `;
 
 
