@@ -5,11 +5,54 @@ import axios from 'axios'
 
 
 
+const Container = styled.div`
+  max-width: 900px;
+  margin: 0 auto;
+  border: 2px solid #eee;
+  border-radius: 7px;
+  padding: 0 15px;
+  background-color: white;
+`;
+
+const Graphics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`
+
+const DataAlertHeading = styled.h2`
+  text-align: center;
+  color: darkred;
+  text-transform: uppercase;
+`
+
+
+const RelativeForGraphics = styled.div`
+  position: relative;
+`;
+
+const PlaceName = styled.h4`
+  text-align: center;
+  color: #808088;
+`;
+
+const LastStatistic = styled.div`
+    position: absolute;
+    display: flex;
+    background: cornsilk;
+    top: 20%;
+    left: 25%;
+    flex-direction: column;
+    padding: 5px;
+    border: 2px solid #eee;
+    border-radius: 7px;
+    color: #b5bbbb;
+    
+`;
 
 // Некоторые области надо писать только на русском.
 const cities = [ 'Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Ukraine', 'Belarus', 'USA', 'Spain',];
 
-const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12'
+const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12';
 
 class App extends Component {
     state = {
@@ -75,46 +118,3 @@ export default App
 
 
 
-const Container = styled.div`
-  max-width: 900px;
-  margin: 0 auto;
-  border: 2px solid #eee;
-  border-radius: 7px;
-  padding: 0 15px;
-  background-color: white;
-`;
-
-const Graphics = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`
-
-const DataAlertHeading = styled.h2`
-  text-align: center;
-  color: darkred;
-  text-transform: uppercase;
-`
-
-
-const RelativeForGraphics = styled.div`
-  position: relative;
-`;
-
-const PlaceName = styled.h4`
-  text-align: center;
-  color: #808088;
-`;
-
-const LastStatistic = styled.div`
-    position: absolute;
-    display: flex;
-    background: cornsilk;
-    top: 20%;
-    left: 25%;
-    flex-direction: column;
-    padding: 5px;
-    border: 2px solid #eee;
-    border-radius: 7px;
-    color: #b5bbbb;
-    
-`;
