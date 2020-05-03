@@ -1,63 +1,19 @@
 import React, {Component} from 'react';
-import styled from 'styled-components';
+import styled, {createGlobalStyle} from 'styled-components';
 import SimpleLineChart from "./Recharts/Recharts";
 import axios from 'axios'
-
-
-
-const Container = styled.div`
-  max-width: 900px;
-  margin: 0 auto;
-  border: 2px solid #eee;
-  border-radius: 7px;
-  padding: 0 15px;
-  background-color: white;
-`;
-
-const Graphics = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`
-
-const DataAlertHeading = styled.h2`
-  text-align: center;
-  color: darkred;
-  text-transform: uppercase;
-`
-
-
-const RelativeForGraphics = styled.div`
-  position: relative;
-`;
-
-const PlaceName = styled.h4`
-  text-align: center;
-  color: #808088;
-`;
-
-const LastStatistic = styled.div`
-    position: absolute;
-    display: flex;
-    background: cornsilk;
-    top: 20%;
-    left: 25%;
-    flex-direction: column;
-    padding: 5px;
-    border: 2px solid #eee;
-    border-radius: 7px;
-    color: #b5bbbb;
-    
-`;
+import Loader from "./UI/Loader/Loader";
 
 // Некоторые области надо писать только на русском.
 const cities = [ 'Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Ukraine', 'Belarus', 'USA', 'Spain',];
-
 const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12';
 
 class App extends Component {
     state = {
-        data: []
-    }
+        data: [],
+        isLoading: false
+    };
+
     componentDidMount() {
         axios.get(API_URL).then(({data: dataString}) => {
             const jsn = dataString.substring(dataString.indexOf('{'));
@@ -71,21 +27,26 @@ class App extends Component {
         const {statistics} = data.find((el) => el.en === 'Moscow') || {};
         const lastData = statistics;
         if (!statistics) {
-            return  null
+            return (
+              <Container>
+                  <GlobalStyle/>
+                  <Loader/>
+              </Container>
+            )
         }
         const isUpdate = lastData[lastData.length-1].confirmed - lastData[lastData.length-2].confirmed;
 
-
         return (
             <Container>
+                <GlobalStyle/>
                 {!isUpdate ?  <DataAlertHeading>Данных за {lastData[lastData.length-1].date.slice(5,10)} ещё нет</DataAlertHeading> : null}
                 <Graphics>
                     {cities.map((place, index) => {
                         const cityData = data.find(el => el.en === place);
                         if (!cityData) {
-                            return
+                            return null
                         }
-                        const {statistics} =cityData;
+                        const {statistics} = cityData;
                         return (
                             <RelativeForGraphics key={`${index}.${place}`}>
                                 <PlaceName> {place.toUpperCase()} </PlaceName>
@@ -113,8 +74,59 @@ class App extends Component {
         )
     }
 };
+
 export default App
 
+
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+  body {
+    background-color: #eee;
+    font-family: "Roboto", sans-serif;
+  };
+`;
+
+const Container = styled.div`
+  max-width: 900px;
+  margin: 0 auto;
+  border: 2px solid #eee;
+  border-radius: 7px;
+  padding: 0 15px;
+  background-color: white;
+`;
+const Graphics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const DataAlertHeading = styled.h2`
+  text-align: center;
+  color: darkred;
+  text-transform: uppercase;
+`;
+
+const RelativeForGraphics = styled.div`
+  position: relative;
+`;
+
+const PlaceName = styled.h4`
+  text-align: center;
+  color: #808088;
+`;
+
+const LastStatistic = styled.div`
+    position: absolute;
+    display: flex;
+    background: cornsilk;
+    top: 20%;
+    left: 25%;
+    flex-direction: column;
+    padding: 5px;
+    border: 2px solid #eee;
+    border-radius: 7px;
+    color: #b5bbbb;
+    
+`;
 
 
 
