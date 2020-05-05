@@ -11,6 +11,10 @@
     transform-origin: 40px 40px;
     animation: lds-spinner 1.2s linear infinite;
 }
+
+h3 {
+    text-align: center;
+}
 .lds-spinner div:after {
     content: " ";
     display: block;

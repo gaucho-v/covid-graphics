@@ -8,7 +8,7 @@ const SimpleLineChart = ({placeData} : any)  => {
     placeData = placeData.map((el: any,index : number) => Object.assign(el, {date : dateFromPlaceData[index]}));
 
     return (
-    <LineChart width={300} height={300} data={placeData}>
+    <LineChart width={450} height={240} data={placeData}>
       <XAxis dataKey='date'/>
       <YAxis/>
       <CartesianGrid strokeDasharray="0.5 1"/>

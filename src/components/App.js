@@ -5,7 +5,7 @@ import axios from 'axios'
 import Loader from "./UI/Loader/Loader";
 
 // Некоторые области надо писать только на русском.
-const cities = [ 'Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Ukraine', 'Belarus', 'USA', 'Spain',];
+const cities = ['Russia','Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Калининградская область','Ukraine', 'Belarus', 'USA'];
 const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12';
 
 class App extends Component {
@@ -18,7 +18,10 @@ class App extends Component {
         axios.get(API_URL).then(({data: dataString}) => {
             const jsn = dataString.substring(dataString.indexOf('{'));
             const data = JSON.parse(jsn);
-            this.setState({data: data.cities.data.cities})
+            this.setState({
+                data: [...data.cities.data.cities, data.countries.data.countries.find((el) => el.en === 'Russia')],
+                dataCountries: data.countries.data.countries
+            });
         }).catch(f => f)
     }
 
@@ -47,9 +50,17 @@ class App extends Component {
                             return null
                         }
                         const {statistics} = cityData;
+                        let placeName = place.toUpperCase();
+                        if (place === 'Белгородская область') {
+                             placeName = 'BELGOROD'
+                        }
+                        if (place === 'Калининградская область') {
+                            placeName = '(NEW) KALININGRAD'
+                        }
+
                         return (
                             <RelativeForGraphics key={`${index}.${place}`}>
-                                <PlaceName> {place.toUpperCase()} </PlaceName>
+                                <PlaceName> {placeName} </PlaceName>
                                 <LastStatistic>
                                     <p>Last data:</p>
                                     {isUpdate ? <>
@@ -79,23 +90,33 @@ export default App
 
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+  @import url("https://fonts.googleapis.com/css?family=Inconsolata&display=swap");
   body {
     background-color: #eee;
-    font-family: "Roboto", sans-serif;
+    font-family: 'Inconsolata', monospace;
+    @media (max-width: 1024px) {
+      background: none;
+    }
   };
 `;
 
 const Container = styled.div`
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   border: 2px solid #eee;
   border-radius: 7px;
-  padding: 0 15px;
+  padding-right: 15px;
   background-color: white;
+  
+  
+  @media (max-width: 1024px) {
+        width: 100%;
+        border: none;
+    }
 `;
 const Graphics = styled.div`
   display: flex;
+  justify-content: space-around;
   flex-wrap: wrap;
 `;
 
@@ -118,8 +139,8 @@ const LastStatistic = styled.div`
     position: absolute;
     display: flex;
     background: cornsilk;
-    top: 20%;
-    left: 25%;
+    top: 24%;
+    left: 16%;
     flex-direction: column;
     padding: 5px;
     border: 2px solid #eee;
