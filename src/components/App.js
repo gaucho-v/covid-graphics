@@ -1,34 +1,58 @@
 import React, {Component} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
-import SimpleLineChart from "./Recharts/Recharts";
 import axios from 'axios'
 import Loader from "./UI/Loader/Loader";
+import Main from './Main/Main'
+import {API_URL} from '../contants'
+import Search from "./Search/Search";
+import {message} from "antd";
 
-// Некоторые области надо писать только на русском.
-const cities = ['Russia','Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Калининградская область','Ukraine', 'Belarus', 'USA'];
-const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12';
 
 class App extends Component {
     state = {
         data: [],
-        isLoading: false
+        cities: ['Russia','Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Калининградская область','Ukraine', 'Belarus', 'USA'],
+        search: ''
     };
 
     componentDidMount() {
+        window.addEventListener("optimizedResize", function() {
+            console.log("Resource conscious resize callback!");
+        });
         axios.get(API_URL).then(({data: dataString}) => {
             const jsn = dataString.substring(dataString.indexOf('{'));
             const data = JSON.parse(jsn);
+
             this.setState({
                 data: [...data.cities.data.cities, data.countries.data.countries.find((el) => el.en === 'Russia')],
-                dataCountries: data.countries.data.countries
             });
         }).catch(f => f)
     }
 
+    handleChangeInput = ({target: {value}}) => {
+         this.setState({
+             search: value
+        })
+    };
+
+    handleAddPlace = () => {
+        const listNamesPlaces = this.state.data.map((el) => el.en.toUpperCase());
+        const index = listNamesPlaces.indexOf(this.state.search.toUpperCase());
+        if(index >= 0) {
+            message.info('Такое место есть');
+
+            this.setState({
+                cities: [this.state.search, ...this.state.cities]
+            });
+        }
+        else {
+            message.info('Неправильно введен город');
+        }
+    };
+
     render() {
-        const {data} = this.state;
-        const {statistics} = data.find((el) => el.en === 'Moscow') || {};
-        const lastData = statistics;
+        const {data,search,cities} = this.state;
+        const {statistics} = data[0] || {};
         if (!statistics) {
             return (
               <Container>
@@ -37,54 +61,18 @@ class App extends Component {
               </Container>
             )
         }
-        const isUpdate = lastData[lastData.length-1].confirmed - lastData[lastData.length-2].confirmed;
-
+        const isUpdate = statistics[statistics.length-1].confirmed - statistics[statistics.length-2].confirmed;
+        const currentDate = statistics[statistics.length-1].date.slice(5,10);
         return (
             <Container>
                 <GlobalStyle/>
-                {!isUpdate ?  <DataAlertHeading>Данных за {lastData[lastData.length-1].date.slice(5,10)} ещё нет</DataAlertHeading> : null}
-                <Graphics>
-                    {cities.map((place, index) => {
-                        const cityData = data.find(el => el.en === place);
-                        if (!cityData) {
-                            return null
-                        }
-                        const {statistics} = cityData;
-                        let placeName = place.toUpperCase();
-                        if (place === 'Белгородская область') {
-                             placeName = 'BELGOROD'
-                        }
-                        if (place === 'Калининградская область') {
-                            placeName = '(NEW) KALININGRAD'
-                        }
-
-                        return (
-                            <RelativeForGraphics key={`${index}.${place}`}>
-                                <PlaceName> {placeName} </PlaceName>
-                                <LastStatistic>
-                                    <p>Last data:</p>
-                                    {isUpdate ? <>
-                                            <div>{statistics[statistics.length-1].confirmed - statistics[statistics.length-2].confirmed} confirmed</div>
-                                            <div>{statistics[statistics.length-1].cured - statistics[statistics.length-2].cured} cured</div>
-                                            <div>{statistics[statistics.length-1].deaths - statistics[statistics.length-2].deaths} d</div>
-                                        </> :
-                                        <>
-                                            <div>{statistics[statistics.length-2].confirmed - statistics[statistics.length-3].confirmed} confirmed</div>
-                                            <div>{statistics[statistics.length-2].cured - statistics[statistics.length-3].cured} cured</div>
-                                            <div>{statistics[statistics.length-2].deaths - statistics[statistics.length-3].deaths} d</div>
-                                        </>}
-                                </LastStatistic>
-                                <SimpleLineChart
-                                    placeData={statistics}/>
-                            </RelativeForGraphics>
-                        )
-                    })
-                    }
-                </Graphics>
+                <Search search={search} addPlace={this.handleAddPlace} changeInput={this.handleChangeInput}/>
+                {!isUpdate ?  <CurrentDate>Данных за {currentDate} ещё нет</CurrentDate> : null}
+                <Main data={data} cities={cities} isUpdate={isUpdate}/>
             </Container>
         )
     }
-};
+}
 
 export default App
 
@@ -94,60 +82,28 @@ const GlobalStyle = createGlobalStyle`
   body {
     background-color: #eee;
     font-family: 'Inconsolata', monospace;
+    height: auto;
     @media (max-width: 1024px) {
       background: none;
     }
   };
 `;
-
 const Container = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   border: 2px solid #eee;
   border-radius: 7px;
-  padding-right: 15px;
   background-color: white;
-  
-  
   @media (max-width: 1024px) {
         width: 100%;
         border: none;
+        padding: 0;
     }
 `;
-const Graphics = styled.div`
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-`;
-
-const DataAlertHeading = styled.h2`
+const CurrentDate = styled.h2`
   text-align: center;
   color: darkred;
   text-transform: uppercase;
 `;
-
-const RelativeForGraphics = styled.div`
-  position: relative;
-`;
-
-const PlaceName = styled.h4`
-  text-align: center;
-  color: #808088;
-`;
-
-const LastStatistic = styled.div`
-    position: absolute;
-    display: flex;
-    background: cornsilk;
-    top: 24%;
-    left: 16%;
-    flex-direction: column;
-    padding: 5px;
-    border: 2px solid #eee;
-    border-radius: 7px;
-    color: #b5bbbb;
-    
-`;
-
 
 

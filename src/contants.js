@@ -1,0 +1,1 @@
+export const API_URL = 'https://cors-anywhere.herokuapp.com/coronavirus-monitor.ru/jquery-lite-9.js?a=12';

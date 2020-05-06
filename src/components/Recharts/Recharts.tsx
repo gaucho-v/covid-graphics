@@ -4,13 +4,14 @@ import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip} from 'recharts';
 
 
 const SimpleLineChart = ({placeData} : any)  => {
-    const dateFromPlaceData = placeData.map((el: any) => el.date.slice(5,10));
-    placeData = placeData.map((el: any,index : number) => Object.assign(el, {date : dateFromPlaceData[index]}));
-
+    const placeDaysWeeks = placeData.map((el: any) => ({
+        ...el,
+        date: el.date.slice(5,10)
+    }));
     return (
-    <LineChart width={450} height={240} data={placeData}>
+    <LineChart width={450} height={240} data={placeDaysWeeks}>
       <XAxis dataKey='date'/>
-      <YAxis/>
+      <YAxis width={75}/>
       <CartesianGrid strokeDasharray="0.5 1"/>
       <Tooltip/>
       <Line type="monotone" dataKey="confirmed" stroke="red" r={1}/>
