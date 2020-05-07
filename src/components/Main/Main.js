@@ -1,6 +1,5 @@
 import React, {PureComponent} from 'react'
 import styled from "styled-components";
-import * as Logic from  "./index";
 import Graphic from "../Graphic/Graphic";
 
 
@@ -10,12 +9,12 @@ class Main extends PureComponent {
      return (
        <Graphics>
          {cities.map((place, index) => {
-           const citiesData = data.find(el => el.en.toUpperCase() === place.toUpperCase());
+           const citiesData = data.find(el => el.ru.toUpperCase() === place.toUpperCase());
            if (!citiesData) {
              return null
            }
            const {statistics} = citiesData;
-           const placeName = Logic.checkPlaceWithoutTranslitInName(place);
+           const placeName = place.toUpperCase();
            return (
              <Graphic key={index + place} statistics={statistics} placeName={placeName} isUpdate={isUpdate} index={index}/>
            )

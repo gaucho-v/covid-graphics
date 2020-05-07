@@ -11,8 +11,9 @@ import {message} from "antd";
 class App extends Component {
     state = {
         data: [],
-        cities: ['Russia','Moscow','Saint Petersburg','Voronezh region','Белгородская область', 'Калининградская область','Ukraine', 'Belarus', 'USA'],
-        search: ''
+        cities: ['Россия','Москва','Санкт-Петербург','Воронежский регион','Белгородская область', 'Калининградская область','Украина', 'Беларусь', 'США'],
+        search: '',
+        listCitiesForRussia: null
     };
 
     componentDidMount() {
@@ -24,7 +25,7 @@ class App extends Component {
             const data = JSON.parse(jsn);
 
             this.setState({
-                data: [...data.cities.data.cities, data.countries.data.countries.find((el) => el.en === 'Russia')],
+                data: [...data.cities.data.cities, data.countries.data.countries.find((el) => el.ru === 'Россия')],
             });
         }).catch(f => f)
     }
@@ -36,22 +37,36 @@ class App extends Component {
     };
 
     handleAddPlace = () => {
-        const listNamesPlaces = this.state.data.map((el) => el.en.toUpperCase());
+        const listNamesPlaces = this.state.data.map((el) => el.ru.toUpperCase());
         const index = listNamesPlaces.indexOf(this.state.search.toUpperCase());
         if(index >= 0) {
             message.info('Такое место есть');
 
             this.setState({
-                cities: [this.state.search, ...this.state.cities]
+                cities: [...this.state.cities,this.state.search],
+                search: ''
             });
         }
         else {
-            message.info('Неправильно введен город');
+            message.error('Неправильно введен город');
         }
     };
 
+    handleShowCitiesList = () => {
+        const {data} = this.state
+        const cities = data.filter((el) => el.country === 'Россия').map((el) => el.ru);
+        this.setState({
+            listCitiesForRussia: cities
+        })
+    };
+    handleCloseCitiesList = () => {
+        this.setState({
+            listCitiesForRussia: null
+        })
+    };
+
     render() {
-        const {data,search,cities} = this.state;
+        const {data,search,cities,listCitiesForRussia} = this.state;
         const {statistics} = data[0] || {};
         if (!statistics) {
             return (
@@ -66,7 +81,12 @@ class App extends Component {
         return (
             <Container>
                 <GlobalStyle/>
-                <Search search={search} addPlace={this.handleAddPlace} changeInput={this.handleChangeInput}/>
+                <Search search={search} addPlace={this.handleAddPlace}
+                        changeInput={this.handleChangeInput}
+                        showCitiesList={this.handleShowCitiesList}
+                        listCitiesForRussia={listCitiesForRussia}
+                        onCloseCitiesList={this.handleCloseCitiesList}
+                />
                 {!isUpdate ?  <CurrentDate>Данных за {currentDate} ещё нет</CurrentDate> : null}
                 <Main data={data} cities={cities} isUpdate={isUpdate}/>
             </Container>

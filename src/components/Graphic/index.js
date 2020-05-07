@@ -25,14 +25,3 @@ export const showLastData = (isUpdate,statistics) => {
   }
 };
 
-export const checkPlaceWithoutTranslitInName = (place) => {
-  let placeName = place.toUpperCase();
-  if (place === 'Белгородская область') {
-    return placeName = 'BELGOROD'
-  }
-  if (place === 'Калининградская область') {
-    return placeName = '(NEW) KALININGRAD'
-  }
-  return placeName
-};
-

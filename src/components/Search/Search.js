@@ -1,7 +1,9 @@
 import React from 'react'
-import {Button, Input} from "antd";
+import {Button, Input, Tooltip} from "antd";
+import { SearchOutlined } from '@ant-design/icons';
 import styled from "styled-components";
 import './Search.css'
+import CitiesList from "../CitiesList/CitiesList";
 
 
 window.onscroll = function showHeader() {
@@ -14,11 +16,15 @@ window.onscroll = function showHeader() {
   }
 };
 
-const Search = ({search,changeInput,addPlace}) => {
+const Search = ({search,changeInput,addPlace,showCitiesList,listCitiesForRussia,onCloseCitiesList}) => {
   return (
     <SearchGroup id='header'>
+      <Button type="primary" onClick={showCitiesList}>Список городов России</Button>
       <Input value={search} onChange={changeInput}></Input>
-      <Button type="primary" onClick={addPlace}>Add place</Button>
+      <Tooltip title="search">
+        <Button type="primary" icon={<SearchOutlined />} onClick={addPlace}>Поиск</Button>
+      </Tooltip>
+      <CitiesList listCitiesForRussia={listCitiesForRussia} onCloseCitiesList={onCloseCitiesList}/>
     </SearchGroup>
   )
 };

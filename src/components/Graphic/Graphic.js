@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import * as Logic from "../Main";
+import * as Logic from "../Graphic/index";
 import SimpleLineChart from "../Recharts/Recharts";
 import styled from "styled-components";
 
@@ -10,7 +10,7 @@ class Graphic extends PureComponent {
       <RelativeForGraphics key={`${index}.${placeName}`}>
         <Name> {placeName} </Name>
         <LastStatistic>
-          <p>Last data:</p>
+          Сегодня:
           {Logic.showLastData(isUpdate,statistics)}
         </LastStatistic>
         <SimpleLineChart
