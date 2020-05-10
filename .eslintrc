@@ -31,7 +31,7 @@
     "semi": ["error", "always"],
     "no-extra-semi": "error",
     "no-unused-vars": "warn",
-    "react/prop-types": 0,
+    "react/prop-types": "warn",
     "no-fallthrough": "warn",
     "no-case-declarations": "off",
     "no-console": "warn",

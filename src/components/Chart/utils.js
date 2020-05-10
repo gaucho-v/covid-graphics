@@ -25,3 +25,11 @@ export const showLastData = (isUpdate, statistics) => {
   }
 };
 
+
+export const findLocation = (data, locationName) => {
+  const searchString = locationName.toLowerCase().trim();
+  return data.find(el => {
+    const { en, ru } = el;
+    return en.toLowerCase() === searchString || ru.toLowerCase() === searchString;
+  });
+};
