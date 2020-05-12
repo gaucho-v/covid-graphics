@@ -7,6 +7,10 @@ import styled from 'styled-components';
 
 const RelativeForGraphics = styled.div`
   position: relative;
+  width: calc(50% - 10px);
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 5px 0 #0000005c;
+  width: ${({isMobile}) => isMobile ? '100%' : '50%'}
 `;
 const LastStatistic = styled.div`
     position: absolute;
@@ -36,9 +40,9 @@ const CloseButton = styled.span`
 
 class Chart extends PureComponent {
   render() {
-    const { location, title, onRemoveChart } = this.props;
+    const { location, title, onRemoveChart,isMobile } = this.props;
     return (
-      <RelativeForGraphics>
+      <RelativeForGraphics isMobile={isMobile}>
         <CloseButton onClick={() => onRemoveChart(title)}>X</CloseButton>
         <Name>{title}</Name>
         <LastStatistic>

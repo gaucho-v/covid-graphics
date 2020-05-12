@@ -12,16 +12,16 @@ const Graphics = styled.div`
 
 class ChartsList extends PureComponent {
   render () {
-    const { data, selected, onRemoveChart } = this.props;
+    const { data, selected, onRemoveChart, isMobile } = this.props;
     return (
-      <Graphics>
+      <Graphics isMobile={isMobile}>
         {selected.map((locationName, index) => {
           const locationData = findLocation(data, locationName);
           if (!locationData) {
             return null;
           }
           return (
-            <Chart key={index + locationName} location={locationData} title={locationName} onRemoveChart={onRemoveChart}/>
+            <Chart key={index + locationName} location={locationData} title={locationName} onRemoveChart={onRemoveChart} isMobile={isMobile}/>
           );
         })
         }
@@ -33,6 +33,7 @@ class ChartsList extends PureComponent {
 ChartsList.propTypes = {
   data: PropTypes.array.isRequired,
   selected: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onRemoveChart: PropTypes.func.isRequired
 };
 
 export default ChartsList;

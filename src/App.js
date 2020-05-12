@@ -6,6 +6,8 @@ import { INITIAL_LOCATIONS } from './contants';
 import Search from './components/Search/Search';
 import { message } from 'antd';
 import DataApi from './api';
+import withIsMobile from "./HOCs/withIsMobile";
+
 
 const GlobalStyle = createGlobalStyle`
   @import url("https://fonts.googleapis.com/css?family=Inconsolata&display=swap");
@@ -31,6 +33,7 @@ const Container = styled.div`
     }
 `;
 
+
 const CurrentDate = styled.h2`
   text-align: center;
   color: darkred;
@@ -42,6 +45,7 @@ class App extends Component {
     state = {
       search: '',
       locationsData: {},
+      filteredLocations: [],
       selectedLocations: localStorage.selectedLocations ? localStorage.selectedLocations.split(',') : [...INITIAL_LOCATIONS],
       isLoading: false,
     };
@@ -51,26 +55,37 @@ class App extends Component {
       DataApi.getStats().then(res => {
         this.setState({ locationsData: res, isLoading: false });
       });
-      // add resize for mobile version
-      // window.addEventListener('optimizedResize', () => {
-      //   console.log('Resource conscious resize callback!');
-      // });
       window.onbeforeunload = this.saveLocations;
     }
     
     saveLocations = () => {
       const { selectedLocations } = this.state;
       localStorage.setItem('selectedLocations', selectedLocations);
-    }
+    };
+
+  filterLocation = (value) => {
+    const {locationsData} = this.state;
+    const search = value.toLowerCase().trim();
+    const filteredDataRu = locationsData.filter((el) => el.ru.toLowerCase().includes(search));
+    const filteredDataEn = locationsData.filter((el) => el.en.toLowerCase().includes(search));
+    return [...filteredDataRu.map((el) => el.ru), ...filteredDataEn.map((el) => el.en)];
+
+  };
 
   handleSearchChange = ({ target: { value } }) => {
+    const filteredLocations = value ? [... new Set(this.filterLocation(value))] : [];
     this.setState({
       search: value,
+      filteredLocations: filteredLocations
     });
   };
 
-    handleAddPlace = () => {
-      const { locationsData, search, selectedLocations } = this.state;
+    handleAddPlace = (place) => {
+      const { locationsData, selectedLocations } = this.state;
+      let {search} = this.state;
+      if (place) {
+        search = place
+      }
       const searchedPlace = search.toLowerCase().trim();
       if (selectedLocations.map(el => el.toLowerCase()).includes(searchedPlace)) {
         message.info('График по выбранному месту уже есть в списке');
@@ -88,6 +103,8 @@ class App extends Component {
         message.info('Место найдено, график добавлен');
         this.setState({
           selectedLocations: [searchedPlace, ...selectedLocations],
+          search: '',
+          filteredLocations: []
         });
       }
       else {
@@ -99,10 +116,11 @@ class App extends Component {
     this.setState(({ selectedLocations }) => ({
       selectedLocations: selectedLocations.filter(el => el !== locationName),
     }));
-  }
+  };
 
   render() {
-    const {  search, locationsData, selectedLocations, isLoading } = this.state;
+    const {isMobile} = this.props;
+    const {  search, locationsData, selectedLocations, isLoading, filteredLocations } = this.state;
     return (
       <Container>
         <GlobalStyle/>
@@ -112,9 +130,12 @@ class App extends Component {
               search={search}
               onAddPlace={this.handleAddPlace}
               onChange={this.handleSearchChange}
+              filteredLocations={filteredLocations}
             />
+
             {!!locationsData.length && (
               <ChartsList
+                isMobile={isMobile}
                 data={locationsData}
                 selected={selectedLocations}
                 onRemoveChart={this.handleRemoveLocation}
@@ -127,6 +148,6 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withIsMobile(App);
 
 
