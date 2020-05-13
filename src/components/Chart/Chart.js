@@ -15,19 +15,12 @@ const RelativeForGraphics = styled.div`
 const LastStatistic = styled.div`
     position: absolute;
     display: flex;
-    background: cornsilk;
-    top: 24%;
-    left: 20%;
-    flex-direction: column;
-    padding: 5px;
-    border: 2px solid #eee;
-    border-radius: 7px;
-    color: #b5bbbb;
-    
+    top: 16%;
+    left: 18%;
 `;
-const Name = styled.h4`
+const LocationName = styled.h3`
   text-align: center;
-  color: #808088;
+  font-size: larger;
   text-transform: capitalize;
 `;
 
@@ -41,13 +34,13 @@ const CloseButton = styled.span`
 class Chart extends PureComponent {
   render() {
     const { location, title, onRemoveChart,isMobile } = this.props;
+
     return (
       <RelativeForGraphics isMobile={isMobile}>
         <CloseButton onClick={() => onRemoveChart(title)}>X</CloseButton>
-        <Name>{title}</Name>
+        <LocationName>{title}</LocationName>
         <LastStatistic>
-          {/*Сегодня:*/}
-          {/*{showLastData(isUpdate, statistics)}*/}
+          {showLastData(location)}
         </LastStatistic>
         <LineChart location={location}/>
       </RelativeForGraphics>

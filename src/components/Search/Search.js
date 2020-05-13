@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {useState} from  'react';
 import { Button, Input, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import './Search.css';
 
@@ -20,7 +19,6 @@ const FilteredLocations = styled.div`
     z-index: 989;
     cursor: default;
 `;
-
 const FilteredLocationStyle = styled.div`
     background: #fff;
     display: flex;
@@ -29,16 +27,15 @@ const FilteredLocationStyle = styled.div`
     margin: 0;
     padding: 0;
     border: 0;
-    border-radius: 0 0 24px 24px;
+    border-radius: 0 0 15px 15px;
     box-shadow: 0 4px 6px 0 rgba(32,33,36,0.28);
     padding-bottom: 4px;
     overflow: hidden;
 `;
-
 const TextInFindPlaced = styled.div`
     display: flex;
     flex: auto;
-    flex-direction: column;
+    justify-content: space-between;
     min-width: 0;
     max-height: none;
     padding: 6px 0;
@@ -46,15 +43,13 @@ const TextInFindPlaced = styled.div`
       background-color: #eee;
     }
 `;
-
 const List = styled.ul`
   padding: 0;
   margin: 0;
   list-style: none;
 `;
-
 const Text = styled.span`
-  margin-left: 11px;
+  margin: 0 11px;
 `;
 
 window.onscroll = function showHeader() {
@@ -69,24 +64,45 @@ window.onscroll = function showHeader() {
   }
 };
 
-
-
-const Search = ({ search, onChange, onAddPlace,filteredLocations}) => {
+const Search = ({ search, onChange, onAddPlace,filteredLocations, locationsData}) => {
+  const [isFilteredLocations, onChangeIsFilteredLocation] = useState(false);
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    onAddPlace();
+  };
+  const handleInputChange = (e) => {
+    onChangeIsFilteredLocation(true);
+    if(e.target.value === '') {
+      onChangeIsFilteredLocation(false);
+    }
+    onChange(e)
+  };
+  const confirmedInLocation = (location) => {
+    const locationData = locationsData.find((e) => e.en === location) || locationsData.find((e) => e.ru === location);
+    return locationData.confirmed
+  };
+  const inputStyle = !isFilteredLocations ? '15px 0px 0px 15px' : '15px 0 0 0';
+  const btnStyle = !isFilteredLocations ? '0px 15px 15px 0px' : '0 15px 0 0';
   return (
+    <form onSubmit={handleFormSubmit}>
     <SearchGroup id='header'>
-      <Input value={search} onChange={onChange}/>
-      <Tooltip title="search">
-        <Button type="primary" icon={<SearchOutlined />} onClick={onAddPlace}>Добавить место</Button>
-      </Tooltip>
-      {!!filteredLocations.length && <FilteredLocations>
-        <FilteredLocationStyle>
-          <List>
-            {filteredLocations.splice(0,5).map((el,index) => <li key={el + index} onClick={() => onAddPlace(el)}>
-              <TextInFindPlaced><Text>{el}</Text></TextInFindPlaced></li>)}
-          </List>
-        </FilteredLocationStyle>
-      </FilteredLocations>}
+        <Input placeholder='Введите название города' style={{borderRadius: inputStyle}}  value={search} onChange={handleInputChange} onBlur={f=>f}/>
+        <Tooltip title="search">
+          <Button style={{borderRadius: btnStyle}} type="primary" >Добавить место</Button>
+        </Tooltip>
+        {!!filteredLocations.length && <FilteredLocations>
+          <FilteredLocationStyle>
+            <List>
+              {filteredLocations.splice(0,5).map((location,index) => <li key={location + index} onClick={() => onAddPlace(location)}>
+                <TextInFindPlaced>
+                  <Text><b>{location}</b></Text>
+                  <Text>{confirmedInLocation(location)} Подтверженных диагнозов</Text>
+                </TextInFindPlaced></li>)}
+            </List>
+          </FilteredLocationStyle>
+        </FilteredLocations>}
     </SearchGroup>
+    </form>
   )
 };
 

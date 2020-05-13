@@ -56,6 +56,7 @@ class App extends Component {
         this.setState({ locationsData: res, isLoading: false });
       });
       window.onbeforeunload = this.saveLocations;
+      // window.onclick = this.handleClickOutSearch
     }
     
     saveLocations = () => {
@@ -66,10 +67,9 @@ class App extends Component {
   filterLocation = (value) => {
     const {locationsData} = this.state;
     const search = value.toLowerCase().trim();
-    const filteredDataRu = locationsData.filter((el) => el.ru.toLowerCase().includes(search));
-    const filteredDataEn = locationsData.filter((el) => el.en.toLowerCase().includes(search));
+    const filteredDataRu = locationsData.filter((el) => el.ru.slice(0,search.length).toLowerCase().includes(search));
+    const filteredDataEn = locationsData.filter((el) => el.en.slice(0,search.length).toLowerCase().includes(search));
     return [...filteredDataRu.map((el) => el.ru), ...filteredDataEn.map((el) => el.en)];
-
   };
 
   handleSearchChange = ({ target: { value } }) => {
@@ -80,6 +80,12 @@ class App extends Component {
     });
   };
 
+  handleClickOutSearch = () => {
+    this.setState({
+      filteredLocations: []
+    })
+  };
+
     handleAddPlace = (place) => {
       const { locationsData, selectedLocations } = this.state;
       let {search} = this.state;
@@ -88,7 +94,7 @@ class App extends Component {
       }
       const searchedPlace = search.toLowerCase().trim();
       if (selectedLocations.map(el => el.toLowerCase()).includes(searchedPlace)) {
-        message.info('График по выбранному месту уже есть в списке');
+        message.error('График по выбранному месту уже есть в списке');
         return;
       }
       const allKnownLocations = locationsData.reduce((acc, location) => {
@@ -96,8 +102,6 @@ class App extends Component {
         acc.push(location.ru.toLowerCase());
         return acc;
       }, []);
-
-     
       const locationFound = allKnownLocations.find(el => el === searchedPlace);
       if (locationFound) {
         message.info('Место найдено, график добавлен');
@@ -122,7 +126,7 @@ class App extends Component {
     const {isMobile} = this.props;
     const {  search, locationsData, selectedLocations, isLoading, filteredLocations } = this.state;
     return (
-      <Container>
+      <Container onClick={this.handleClickOutSearch}>
         <GlobalStyle/>
         {isLoading ? <Loader/> : (
           <Fragment>
@@ -131,6 +135,7 @@ class App extends Component {
               onAddPlace={this.handleAddPlace}
               onChange={this.handleSearchChange}
               filteredLocations={filteredLocations}
+              locationsData={locationsData}
             />
 
             {!!locationsData.length && (
