@@ -1,7 +1,7 @@
 # C-19
 
 ## Демо проекта.
-Open [covid2019-visual](https://gaucho-v.github.io/covid2019-visual/) 
+Open [Covid Graphics](https://gaucho-v.github.io/Covid-Graphics/) 
 
 ## Запуск проекта.
 
