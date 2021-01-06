@@ -17,7 +17,7 @@
     "@types/recharts": "^1.8.9",
     "@types/styled-components": "^5.1.0",
     "antd": "^4.2.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "gh-pages": "^2.2.0",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
